@@ -27,11 +27,15 @@ const StyledInput = styled.input`
     padding: 8px 16px;
     font-size: 14px;
     line-height: 24px;
+    border: 1px solid #E5E7EB;
     
     &:focus {
      outline: none;
      border-color: #5F4AE5;    
-    }
+    }  
+    ${props => props.isIndented && `
+        border-color: #FF6155;
+   `}
 `
 
 const StyledError = styled.p`
@@ -47,11 +51,11 @@ min-height: 100vh;
 padding: 2rem;
 `
 
-const initialState = {
-    name: ''
-}
+function CustomInput({...props}) {
+    const initialState = {
+        name: props.defaultValue
+    }
 
-function CustomInput() {
     const [state, setState] = useState(initialState);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
@@ -59,7 +63,7 @@ function CustomInput() {
         e.preventDefault()
         for(let key in state) {
             if(state[key] === '') {
-                setError('Something went wrong.')
+                setError(props.error)
                 setSuccess(false);
             } else {
                 setError('')
@@ -68,26 +72,26 @@ function CustomInput() {
             }
         }
     }
+
     const handleInput = e => {
         const inputName = e.currentTarget.name;
         const value = e.currentTarget.value;
 
         setState(prev => ({...prev, [inputName]: value}))
     }
+
     return (
         <AppWrapper>
             <StyledForm onSubmit={handleSubmit}>
-                <label htmlFor="name">Input field label</label>
+                <label htmlFor="name">{props.labelValue}</label>
                 <StyledInput
-
-                    style={{ border: error ? '1px solid #FF6155' : '1px solid #E5E7EB'}}
-                    className={error && 'error-border'}
-                    disabled={success ? true : false}
+                    disabled={success ? true : props.disabled}
                     type="text"
                     name="name"
-                    placeholder="Placeholder"
+                    placeholder={props.placeholder}
                     value={state.name}
                     onChange={handleInput}
+                    isIndented={error}
                 />
                 {error && <StyledError>{error}</StyledError>}
                 <StyledButton
